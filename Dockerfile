@@ -1,11 +1,11 @@
-FROM debian
+FROM golang:alpine AS build
 MAINTAINER b3vis
-WORKDIR /usr/bin
-RUN apt-get update && apt-get install curl wget -y && \
-    LATESTURL=`curl -s https://api.github.com/repos/mdlayher/unifi_exporter/releases | grep browser_download_url | head -n 1 | cut -d '"' -f 4` && \
-    wget $LATESTURL && \
-    chmod +x /usr/bin/unifi_exporter && \
-    apt-get remove --purge -y curl wget $(apt-mark showauto) && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add git --no-cache && \
+    go get -u github.com/mdlayher/unifi_exporter && \
+    go get -t -v ./...
+
+FROM alpine:latest
+COPY --from=build /go/bin/unifi_exporter /usr/local/bin/unifi_exporter
 EXPOSE 9130
-CMD /usr/bin/unifi_exporter $ARGUMENTS
+VOLUME /config
+CMD /usr/local/bin/unifi_exporter -config.file /config/config.yml

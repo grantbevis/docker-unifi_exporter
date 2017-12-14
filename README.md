@@ -4,31 +4,31 @@ Containerised version of [unifi_exporter](https://github.com/mdlayher/unifi_expo
 
 unifi_exporter is a metrics exporter for [Prometheus](https://prometheus.io/)
 
-Make sure you set the ARGUMENTS variable with the details to access your UniFi instance
+Edit the example config.yml to your setup
 
 ---
-#### 0.0.1 (2017-03-31)
+#### 0.0.2
 
-Initial release
-
+- 2017-03-31 :: Initial release
+- 2017-12-14 :: Moved to Alpine
 ---
+#### Example config.yml
+```
+listen:
+  address: :9130
+  metricspath: /metrics
+unifi:
+  address: https://unifi.mydomain.com:8443
+  username:
+  password:
+  site:
+  insecure: false
+  timeout: 5s
+```
+
 #### Example Run Command
 
 ```
-docker run -d -p 9130:9130 -e ARGUMENTS="-unifi.addr https://10.0.0.1:8443 -unifi.username admin -unifi.password password" b3vis/unifi_exporter
-```
-
-#### Docker Compose Example
-```
-version: "2"
-services:
-  unifi_exporter:
-    image: b3vis/unifi_exporter
-    restart: always
-    container_name: unifi_exporter
-    environment:
-      - ARGUMENTS="-unifi.addr https://10.0.0.1:8443 -unifi.username admin -unifi.password password"
-    ports:
-      - "9130:9130"
+docker run -d -p 9130:9130 -v /srv/unifi_exporter/config.yml:/config/config.yml b3vis/unifi_exporter
 ```
 ---
